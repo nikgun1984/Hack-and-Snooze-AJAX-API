@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Hack or Snooze</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+
+<body>
+  <nav>
+    <b><a class="nav-link navbar-brand" href="#" id="nav-all">Hack or Snooze</a></b>
+    <a class="nav-link nav-right" href="#" id="nav-login">login/create user</a>
+    <a class="nav-link nav-right" href="#" id="nav-story" style="display:none">create a new story</a>
+    <a class="nav-link nav-right" href="#" id="nav-back" style="display:none">back to main</a>
+    <span class="nav-link nav-right hidden" id="nav-welcome">
+      <a href="#" id="nav-user-profile"></a>
+    </span>
+    <a class="hidden" id="nav-logout" href="#">
+      <small>(logout)</small>
+    </a>
+  </nav>
+  <section class="articles-container container">
+    <form action="" class="hidden" id="submit-form">
+      <div>
+        <label for="author">author</label>
+        <input id="author" required type="text" placeholder="author name">
+      </div>
+      <div>
+        <label for="title">title</label>
+        <input id="title" required type="text" placeholder="article title">
+      </div>
+      <div>
+        <label for="url">url</label>
+        <input id="url" required type="url" placeholder="article url">
+      </div>
+      <button type="submit">submit</button>
+      <hr>
+    </form>
+    <article>
+      <ol id="all-articles-list" class="articles-list">
+        <h3>Loading...</h3>
+      </ol>
+    </article>
+    <article>
+      <ul id="favorited-articles" class="hidden articles-list">
+      </ul>
+    </article>
+    <article>
+      <ul id="filtered-articles" class="hidden articles-list">
+      </ul>
+    </article>
+    <article>
+      <ul id="my-articles" class="hidden articles-list">
+      </ul>
+    </article>
+  </section>
+  <section class="edit-article-container container">
+    <form action="#" id="edit-article-form" class="hidden" method="post">
+      <h4>Article Information</h4>
+      <div class="edit-input">
+        <label for="edit-title">Title</label>
+        <input id="edit-title" type="text">
+        <button type="submit">change</button>
+      </div>
+    </form>
+  </section>
+  <section class="account-forms-container container">
+    <form action="#" id="login-form" class="account-form hidden" method="post">
+      <h4>Login</h4>
+      <div class="login-input">
+        <label for="login-username">username</label>
+        <input id="login-username" type="text">
+      </div>
+      <div class="login-input">
+        <label for="login-password">password</label>
+        <input id="login-password" type="password">
+      </div>
+      <button type="submit">login</button>
+      <hr>
+    </form>
+    <form action="#" id="create-account-form" class="account-form hidden" method="post">
+      <h4>Create Account</h4>
+      <div class="login-input">
+        <label for="create-account-name">name</label>
+        <input id="create-account-name" type="text">
+      </div>
+      <div class="login-input">
+        <label for="create-account-username">username</label>
+        <input id="create-account-username" type="text">
+      </div>
+      <div class="login-input">
+        <label for="create-account-password">password</label>
+        <input id="create-account-password" type="password">
+      </div>
+      <button type="submit">create account</button>
+    </form>
+  </section>
+  <section id="user-profile" class="container hidden">
+    <h4>User Profile Info</h4>
+    <section>
+      <div id="profile-name">Name:</div>
+      <div id="profile-username">Username:</div>
+      <div id="profile-account-date">Account Created:</div>
+    </section>
+  </section>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+<script src="api-classes.js"></script>
+<script src="ui.js"></script>
+
+</html>
