@@ -200,12 +200,12 @@ $(async function() {
 
   function generateStoryHTML(story) {
     let hostName = getHostName(story.url);
-    const faves = localStorage.getItem('favorites');
-    console.log(story.storyId);
-    let color;
-    for(let fave of faves){
-        color = story.storyId == fave?'text-warning':'text-light';
-    }
+    // const faves = localStorage.getItem('favorites');
+    // console.log(story.storyId);
+    // let color;
+    // for(let fave of faves){
+    //     color = story.storyId == fave?'text-warning':'text-light';
+    // }
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
