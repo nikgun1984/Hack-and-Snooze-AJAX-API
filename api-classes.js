@@ -122,8 +122,8 @@ class User {
     const existingUser = new User(response.data.user);
 
     // instantiate Story instances for the user's favorites and ownStories
-    existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
-    existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
+    existingUser.favorites = new Set(response.data.user.favorites.map(s => new Story(s)));
+    existingUser.ownStories = new Set(response.data.user.stories.map(s => new Story(s).storyId));
 
     // attach the token to the newUser instance for convenience
     existingUser.loginToken = response.data.token;
@@ -155,8 +155,8 @@ class User {
     existingUser.loginToken = token;
 
     // instantiate Story instances for the user's favorites and ownStories
-    existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
-    existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
+    existingUser.favorites = new Set(response.data.user.favorites.map(s => new Story(s)));
+    existingUser.ownStories = new Set(response.data.user.stories.map(s => new Story(s)));
     return existingUser;
   }
 }

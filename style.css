@@ -30,15 +30,9 @@ a:hover {
   text-decoration: underline;
 }
 
-
-.hidden {
-  display: none;
-}
-
-
-
 nav {
   display: flex;
+  justify-content: end;
   background-color: #ff6600;
   align-items: center;
   padding: 5px 20px;
@@ -55,7 +49,11 @@ nav {
 }
 
 .nav-right {
-  margin-left: auto;
+  margin-left: 0;
+}
+
+.topnav-right {
+  float: right;
 }
 
 .container {
@@ -63,6 +61,10 @@ nav {
   flex-direction: column;
   align-self: center;
   background-color: #f6f6ef;
+}
+
+.hidden {
+  display: none;
 }
 
 form {
@@ -229,7 +231,6 @@ form > hr {
 
 i{
   font-size: 20px;
-  -webkit-text-stroke-width: 2px;
-  -webkit-text-stroke-color: orange;
+  color: rgba(218, 206, 206, 0.856);
 }
 

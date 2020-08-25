@@ -15,15 +15,16 @@
 <body>
   <nav>
     <b><a class="nav-link navbar-brand" href="#" id="nav-all">Hack or Snooze</a></b>
-    <a class="nav-link nav-right" href="#" id="nav-login">login/create user</a>
-    <a class="nav-link nav-right" href="#" id="nav-story" style="display:none">create a new story</a>
-    <a class="nav-link nav-right" href="#" id="nav-back" style="display:none">back to main</a>
-    <span class="nav-link nav-right hidden" id="nav-welcome">
-      <a href="#" id="nav-user-profile"></a>
-    </span>
-    <a class="hidden" id="nav-logout" href="#">
-      <small>(logout)</small>
-    </a>
+    <a class="nav-link hidden" href="#" id="nav-faves">favorites</a>
+    <a class="nav-link hidden" href="#" id="nav-my-stories">my stories</a>
+    <div class="topnav-right">
+      <a class="nav-link" href="#" id="nav-login">login/create user</a>
+      <a class="nav-link hidden" href="#" id="nav-story">create a new story</a>
+      <a class="nav-link hidden"  href="#" id="nav-user-profile"></a>
+      <a class="nav-link hidden" href="#" id="nav-logout">
+        <small>(logout)</small>
+      </a>
+    </div>
   </nav>
   <section class="articles-container container">
     <form action="" class="hidden" id="submit-form">
@@ -104,14 +105,43 @@
   <section id="user-profile" class="container hidden">
     <h4>User Profile Info</h4>
     <section>
-      <div id="profile-name">Name:</div>
-      <div id="profile-username">Username:</div>
-      <div id="profile-account-date">Account Created:</div>
+      <div id="profile-name"></div>
+      <div id="profile-username"></div>
+      <div id="profile-account-date"></div>
     </section>
+    <form action="#" id="edit-profile-form" method="post">
+      <div class="login-input">
+        <label for="update-account-name">name</label>
+        <input id="update-account-name" type="text">
+      </div>
+      <div class="login-input">
+        <label for="update-account-password">password</label>
+        <input id="update-account-password" type="password">
+      </div>
+      <button type="submit">update account</button>
+    </form>
   </section>
+  <!-- <section id="user-profile" class="hidden edit-article-container container">
+    <h4><i class="text-dark">User Profile Info</i></h4>
+      <div id="profile-name"></div>
+      <div id="profile-username"></div>
+      <div id="profile-account-date"></div>
+      <form action="#" id="edit-profile-form" method="post">
+        <div class="login-input">
+          <label for="update-account-name">name</label>
+          <input id="update-account-name" type="text">
+        </div>
+        <div class="login-input">
+          <label for="update-account-password">password</label>
+          <input id="update-account-password" type="password">
+        </div>
+        <button type="submit">update account</button>
+      </form>
+  </section> -->
 </body>
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
 <script src="https://unpkg.com/axios/dist/axios.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 <script src="api-classes.js"></script>

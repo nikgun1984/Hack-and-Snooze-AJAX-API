@@ -3,20 +3,24 @@ $(async function() {
   const $allStoriesList = $("#all-articles-list");
   const $submitForm = $("#submit-form");
   const $filteredArticles = $("#filtered-articles");
+  const $favoritedArticles = $("#favorited-articles")
   const $loginForm = $("#login-form");
   const $createAccountForm = $("#create-account-form");
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navStory = $("#nav-story");
-  const $navBack = $("#nav-back");
   const $navLogOut = $("#nav-logout");
-
+  const $navFaves = $("#nav-faves");
+  const $userProfile = $('#nav-user-profile');
+  const $sectionUserProfile = $('#user-profile');
+  const $myStories = $("#nav-my-stories")
 
   // global storyList variable
   let storyList = null;
-
   // global currentUser variable
   let currentUser = null;
+  //delete items and store them in localStorage to filter them out
+  let removed = null;
 
   await checkIfLoggedIn();
 
@@ -36,6 +40,11 @@ $(async function() {
     const userInstance = await User.login(username, password);
     // set the global user to the user instance
     currentUser = userInstance;
+    if(currentUser.ownStories.size>0){
+        $myStories.show();
+        $userProfile.show();
+        $('#nav-user-profile').append(currentUser.username);
+    }
     syncCurrentUserToLocalStorage();
     loginAndSubmitForm();
   });
@@ -74,7 +83,6 @@ $(async function() {
   /**
    * Event Handler for Clicking Login
    */
-
   $navLogin.on("click", function() {
     // Show the Login and Create Account Forms
     $loginForm.slideToggle();
@@ -86,7 +94,8 @@ $(async function() {
    * Event handler for Navigation to Homepage
    */
 
-  $("body").on("click", "#nav-all", async function() {
+  $("body").on("click", "#nav-all", async function(e) {
+    disableButtonListener(e);
     hideElements();
     await generateStories();
     $allStoriesList.show();
@@ -96,41 +105,73 @@ $(async function() {
    * Event handler for Getting Form to add a new story
    */
 
-  $navStory.on("click", function() {
-    $allStoriesList.toggle();
+  $navStory.on("click", function(e) {
+    disableButtonListener(e);
+    toggleBetweenForms();
     $submitForm.show();
-    $navStory.hide();
-    $navBack.show();
+    $sectionUserProfile.hide();
   });
-
-  $navBack.on("click", function(){
-    $submitForm.hide();
-    $navStory.show();
-    $allStoriesList.toggle();
-    $navBack.hide();
-  })
 
   $submitForm.on("submit", async function(e){
     e.preventDefault();
-
     // grab the required fields
     let author = $("input#author").val();
     let title = $("input#title").val();
     let url = $("input#url").val();
-
+    toggleBetweenForms();
+    $myStories.show()
     // call the create method, which calls the API and then builds a new user instance
     const newStory = await StoryList.addStory(currentUser,{author,title,url});
     const res = generateStoryHTML(newStory);
-    $allStoriesList.append(res);
-    console.log($allStoriesList);
+    $allStoriesList.prepend(res);
+    currentUser.ownStories.add(newStory.storyId);
+    syncCurrentUserToLocalStorage();
+  });
+
+  $userProfile.on('click',function(e){
+    disableButtonListener(e);
+    toggleBetweenForms();
+    $submitForm.hide();
+    $sectionUserProfile.show();
+    $('#profile-name').html(`Name: <b>${currentUser.name}</b>`);
+    $('#profile-username').html(`Username: <b>${currentUser.username}</b>`);
+    $('#profile-account-date').html(`Account Created: <b>${currentUser.createdAt}</b>`);
   })
 
   $(document).on('click','i',function(){
-    $(this).toggleClass('text-light');
     $(this).toggleClass('text-warning');
-    currentUser.favorites.push($(this).parent().attr("id"));
+    if(!currentUser.favorites.has($(this).parent().attr("id"))){
+      currentUser.favorites.add($(this).parent().attr("id"));
+    } else {
+      currentUser.favorites.delete($(this).parent().attr("id"));
+    }
+    currentUser.favorites.size > 0?$navFaves.show():$navFaves.hide();
     syncCurrentUserToLocalStorage();
-  })
+  });
+
+  $(document).on('click','a.remove',function(e){
+    const boundRemoveStory = deleteStory.bind($(this));
+    boundRemoveStory(currentUser.favorites);
+    boundRemoveStory(currentUser.ownStories);
+    removed.add($(this).parent().attr("id"))
+    $(this).parent().remove();
+    syncCurrentUserToLocalStorage();
+  });
+
+  $navFaves.on('click', async function(e){
+    disableButtonListener(e);
+    $ownStories.hide();
+    await generateStories();
+    return whichStories(currentUser.favorites,$favoritedArticles);
+  });
+
+  $myStories.on('click',async function(e){
+    disableButtonListener(e);
+    $favoritedArticles.hide();
+    await generateStories();
+    return whichStories(currentUser.ownStories,$ownStories);
+  });
+
 
   /**
    * On page load, checks local storage to see if the user is already logged in.
@@ -141,16 +182,26 @@ $(async function() {
     // let's see if we're logged in
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
-
     // if there is a token in localStorage, call User.getLoggedInUser
     //  to get an instance of User with the right details
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
-    await generateStories();
 
     if (currentUser) {
+      $('#nav-welcome').show();
+      currentUser.favorites = new Set(JSON.parse(localStorage.getItem('favorites')));
+      if(currentUser.favorites.size>0){
+        $navFaves.show();
+      }
+      currentUser.ownStories = new Set(JSON.parse(localStorage.getItem('ownStories')));
+      if(currentUser.ownStories.size>0){
+        $myStories.show();
+      }
       showNavForLoggedInUser();
+      $('#nav-user-profile').append(currentUser.username);
+      $userProfile.show();
     }
+    await generateStories();
   }
 
   /**
@@ -185,13 +236,18 @@ $(async function() {
     storyList = storyListInstance;
     // empty out that part of the page
     $allStoriesList.empty();
-
+    //get our filtered set
+    removed = new Set(JSON.parse(localStorage.getItem('removedStories')));
     // loop through all of our stories and generate HTML for them
-    for (let story of storyList.stories) {
-      console.log(story);
-      const result = generateStoryHTML(story);
-      $allStoriesList.append(result);
+    for (let $story of storyList.stories) {
+      const $result = generateStoryHTML($story);
+      if(removed.has($story.storyId)){
+        $filteredArticles.append($result);
+      } else{
+        $allStoriesList.append($result);
+      }
     }
+    $filteredArticles.empty();
   }
 
   /**
@@ -200,12 +256,12 @@ $(async function() {
 
   function generateStoryHTML(story) {
     let hostName = getHostName(story.url);
-    // const faves = localStorage.getItem('favorites');
-    // console.log(story.storyId);
-    // let color;
-    // for(let fave of faves){
-    //     color = story.storyId == fave?'text-warning':'text-light';
-    // }
+    let color = '';
+    if(currentUser){
+      if(currentUser.favorites.has(story.storyId)){
+        color='text-warning';
+      }
+    }
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
@@ -216,6 +272,7 @@ $(async function() {
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
         <small class="article-username">posted by ${story.username}</small>
+        <a class="remove text-dark">delete</a>
       </li>
     `);
     return storyMarkup;
@@ -227,18 +284,48 @@ $(async function() {
     const elementsArr = [
       $submitForm,
       $allStoriesList,
+      $favoritedArticles,
       $filteredArticles,
       $ownStories,
       $loginForm,
-      $createAccountForm
+      $createAccountForm,
+      $sectionUserProfile
     ];
     elementsArr.forEach($elem => $elem.hide());
+  }
+
+  function disableButtonListener(e){
+    const navButtons = [
+      $myStories,
+      $userProfile,
+      $navFaves,
+      $navStory,
+      $('#nav-all')
+    ];
+    navButtons.forEach(function($btn){
+      if($btn[0].id === e.target.id){
+        $btn.css('pointer-events', 'none').css("color","white");
+      } else {
+        $btn.css('pointer-events', 'auto').css("color","black");
+      }
+    })
   }
 
   function showNavForLoggedInUser() {
     $navLogin.hide();
     $navStory.show();
     $navLogOut.show();
+  }
+
+  function toggleBetweenForms(){
+    $allStoriesList.hide();
+    $favoritedArticles.empty();
+    $ownStories.empty();
+  }
+
+  function hideForms(){
+    $submitForm.hide();
+    $sectionUserProfile.hide();
   }
 
   /* simple function to pull the hostname from a URL */
@@ -262,7 +349,38 @@ $(async function() {
     if (currentUser) {
       localStorage.setItem("token", currentUser.loginToken);
       localStorage.setItem("username", currentUser.username);
-      localStorage.setItem('favorites',currentUser.favorites);
+      localStorage.setItem('favorites',JSON.stringify([...currentUser.favorites]));
+      const myStories = [];
+      for(let story of [...currentUser.ownStories]){
+        myStories.push(story);
+      }
+      localStorage.setItem('ownStories',JSON.stringify(myStories));
+      localStorage.setItem('removedStories',JSON.stringify([...removed]));
+    }
+  }
+
+  function whichStories(stories, articles){
+    toggleBetweenForms();
+    articles.show();
+    hideForms();
+    let i=0;
+    while(i<$('#all-articles-list li').length){
+      const $story = $('#all-articles-list li').eq(i);
+      if(stories.has($('#all-articles-list li').eq(i).attr("id"))){
+        articles.append($story.clone());
+      }
+      i++;
+    }
+  }
+
+  //delete story from the page
+  function deleteStory(story){
+    if(story.has($(this).parent().attr("id"))){
+      story.delete($(this).parent().attr("id"));
     }
   }
 });
+
+
+
+
