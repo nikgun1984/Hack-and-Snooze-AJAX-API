@@ -26,10 +26,6 @@ a {
   color: inherit;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
 nav {
   display: flex;
   justify-content: end;
@@ -45,7 +41,8 @@ nav {
 
 .nav-link {
   font-size: 0.85rem;
-  margin: 0 3px;
+  padding: 0.5rem;
+  /* margin: 0 3px; */
 }
 
 .nav-right {
@@ -233,4 +230,25 @@ i{
   font-size: 20px;
   color: rgba(218, 206, 206, 0.856);
 }
+
+#nav-user-profile{
+  font-size: 0.5rem;
+  font-weight: bolder;
+  padding-right: 0rem;
+  font-style: oblique;
+  /* padding: .5rem; */
+}
+
+#nav-logout{
+  padding-left: 0rem;
+}
+
+.hover-item:hover {
+  text-decoration: underline;
+}
+
+a{
+  color: black;
+}
+
 

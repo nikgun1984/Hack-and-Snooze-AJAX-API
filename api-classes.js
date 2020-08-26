@@ -58,6 +58,23 @@ class StoryList {
     const story = new Story(response.data.story);
     return story;
   }
+
+  static async updateStory(user, story, id){
+    
+    // call the API
+    const response = await axios.patch(`${BASE_URL}/stories/${id}`, {
+        token: user.loginToken,
+        story: {
+          author: story.author,
+          title: story.title,
+          url: story.url
+        }
+      }
+    );
+
+    const updatedStory = new Story(response.data.story);
+    return updatedStory;
+  }
 }
 /**
  * The User class to primarily represent the current user.
@@ -181,4 +198,6 @@ class Story {
     this.createdAt = storyObj.createdAt;
     this.updatedAt = storyObj.updatedAt;
   }
+
+  
 }

@@ -56,17 +56,22 @@ $(async function() {
 
   $createAccountForm.on("submit", async function(evt) {
     evt.preventDefault(); // no page refresh
+    try{
+      // grab the required fields
+      let name = $("#create-account-name").val();
+      let username = $("#create-account-username").val();
+      let password = $("#create-account-password").val();
 
-    // grab the required fields
-    let name = $("#create-account-name").val();
-    let username = $("#create-account-username").val();
-    let password = $("#create-account-password").val();
-
-    // call the create method, which calls the API and then builds a new user instance
-    const newUser = await User.create(username, password, name);
-    currentUser = newUser;
-    syncCurrentUserToLocalStorage();
-    loginAndSubmitForm();
+      // call the create method, which calls the API and then builds a new user instance
+      const newUser = await User.create(username, password, name);
+      currentUser = newUser;
+      syncCurrentUserToLocalStorage();
+      loginAndSubmitForm();
+    } catch(error){
+      if(error.response){
+        alert(error.response.data.error.message);
+      }
+    }
   });
 
   /**
@@ -106,10 +111,12 @@ $(async function() {
    */
 
   $navStory.on("click", function(e) {
+    $('h4#title-add-update').text('Add Story');
     disableButtonListener(e);
     toggleBetweenForms();
     $submitForm.show();
     $sectionUserProfile.hide();
+    console.log(currentUser.loginToken);
   });
 
   $submitForm.on("submit", async function(e){
@@ -119,13 +126,25 @@ $(async function() {
     let title = $("input#title").val();
     let url = $("input#url").val();
     toggleBetweenForms();
-    $myStories.show()
-    // call the create method, which calls the API and then builds a new user instance
-    const newStory = await StoryList.addStory(currentUser,{author,title,url});
-    const res = generateStoryHTML(newStory);
+    $myStories.show();
+    let newStory;
+    if($('h4#title-add-update').text() == 'Update Story'){
+      //updating existing story
+      console.log('here');
+      newStory = await StoryList.updateStory(currentUser,{author,title,url},$('h4#title-add-update').attr('data-id'));
+    } else {
+      // call the create method, which calls the API and then builds a new user instance
+      newStory = await StoryList.addStory(currentUser,{author,title,url});
+    }
+    let flag = true;
+    const res = generateStoryHTML(newStory,flag);
     $allStoriesList.prepend(res);
     currentUser.ownStories.add(newStory.storyId);
     syncCurrentUserToLocalStorage();
+    $submitForm.hide();
+    $submitForm[0].reset();
+    // show the stories
+    $allStoriesList.show();
   });
 
   $userProfile.on('click',function(e){
@@ -158,6 +177,20 @@ $(async function() {
     syncCurrentUserToLocalStorage();
   });
 
+  $(document).on('click','a.edit',function(e){
+    const $title = e.target.parentElement.children[1].innerText;
+    const $link = e.target.parentElement.children[1].href;
+    const $author = e.target.parentElement.children[2].innerText.split('by ')[1];
+    $('input#author').attr('value', $author);
+    $('input#title').attr('value', $title);
+    $('input#url').attr('value', $link);
+    disableButtonListener(e);
+    toggleBetweenForms();
+    $submitForm.show();
+    $sectionUserProfile.hide();
+    $('h4#title-add-update').text('Update Story').attr('data-id',e.target.parentElement.id);
+  });
+
   $navFaves.on('click', async function(e){
     disableButtonListener(e);
     $ownStories.hide();
@@ -166,6 +199,7 @@ $(async function() {
   });
 
   $myStories.on('click',async function(e){
+    console.log(currentUser.loginToken);
     disableButtonListener(e);
     $favoritedArticles.hide();
     await generateStories();
@@ -240,7 +274,7 @@ $(async function() {
     removed = new Set(JSON.parse(localStorage.getItem('removedStories')));
     // loop through all of our stories and generate HTML for them
     for (let $story of storyList.stories) {
-      const $result = generateStoryHTML($story);
+      const $result = generateStoryHTML($story,false);
       if(removed.has($story.storyId)){
         $filteredArticles.append($result);
       } else{
@@ -254,12 +288,16 @@ $(async function() {
    * A function to render HTML for an individual Story instance
    */
 
-  function generateStoryHTML(story) {
+  function generateStoryHTML(story,flag) {
     let hostName = getHostName(story.url);
     let color = '';
+    let edit = '';
     if(currentUser){
       if(currentUser.favorites.has(story.storyId)){
         color='text-warning';
+      }
+      if(currentUser.ownStories.has(story.storyId) || flag){
+        edit = 'edit';
       }
     }
     // render story markup
@@ -270,9 +308,10 @@ $(async function() {
            <strong>${story.title}</strong>
         </a>
         <small class="article-author">by ${story.author}</small>
-        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-hostname">(${hostName})</small>
         <small class="article-username">posted by ${story.username}</small>
         <a class="remove text-dark">delete</a>
+        <a class="edit text-dark">${edit}</a>
       </li>
     `);
     return storyMarkup;

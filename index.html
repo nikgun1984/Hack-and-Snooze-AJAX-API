@@ -13,21 +13,25 @@
 </head>
 
 <body>
+
   <nav>
     <b><a class="nav-link navbar-brand" href="#" id="nav-all">Hack or Snooze</a></b>
-    <a class="nav-link hidden" href="#" id="nav-faves">favorites</a>
-    <a class="nav-link hidden" href="#" id="nav-my-stories">my stories</a>
-    <div class="topnav-right">
-      <a class="nav-link" href="#" id="nav-login">login/create user</a>
-      <a class="nav-link hidden" href="#" id="nav-story">create a new story</a>
-      <a class="nav-link hidden"  href="#" id="nav-user-profile"></a>
-      <a class="nav-link hidden" href="#" id="nav-logout">
-        <small>(logout)</small>
-      </a>
+    <div class="main-nav-links">
+      <a class="nav-link hidden hover-item" href="#" id="nav-faves">favorites</a>
+      <a class="nav-link hidden hover-item" href="#" id="nav-my-stories">my stories</a>
+      <a class="nav-link hidden hover-item" href="#" id="nav-story">create a new story</a>
     </div>
+      <div class="ml-auto">
+        <a class="nav-link hover-item" href="#" id="nav-login">login/create user</a>
+        <a class="nav-link hidden hover-item"  href="#" id="nav-user-profile"></a>
+        <a class="nav-link hidden hover-item" href="#" id="nav-logout">
+          <small>(logout)</small>
+        </a>
+      </div>
   </nav>
   <section class="articles-container container">
     <form action="" class="hidden" id="submit-form">
+      <h4 id="title-add-update">Add Story</h3>
       <div>
         <label for="author">author</label>
         <input id="author" required type="text" placeholder="author name">
@@ -41,7 +45,6 @@
         <input id="url" required type="url" placeholder="article url">
       </div>
       <button type="submit">submit</button>
-      <hr>
     </form>
     <article>
       <ol id="all-articles-list" class="articles-list">
@@ -110,15 +113,15 @@
       <div id="profile-account-date"></div>
     </section>
     <form action="#" id="edit-profile-form" method="post">
-      <div class="login-input">
+      <div>
         <label for="update-account-name">name</label>
-        <input id="update-account-name" type="text">
+        <input id="update-account-name" type="text" placeholder="name" class="ml-3">
       </div>
-      <div class="login-input">
+      <div>
         <label for="update-account-password">password</label>
-        <input id="update-account-password" type="password">
+        <input id="update-account-password" type="password" placeholder="your password" class="ml-3">
       </div>
-      <button type="submit">update account</button>
+      <button type="submit">update</button>
     </form>
   </section>
   <!-- <section id="user-profile" class="hidden edit-article-container container">
