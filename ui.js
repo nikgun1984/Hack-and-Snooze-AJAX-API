@@ -43,13 +43,13 @@ $(async function() {
       currentUser = userInstance;
       if(currentUser){
         ifCurrentUser();
+        syncCurrentUserToLocalStorage();
+        loginAndSubmitForm();
       }
     } catch(e){
       alert("Wrong Username or Password. Please try again...");
     }
     await generateStories();
-    syncCurrentUserToLocalStorage();
-    loginAndSubmitForm();
   });
 
   /*
@@ -307,11 +307,13 @@ $(async function() {
     let hostName = getHostName(story.url),
         color = '',
         edit = '',
-        dlt = '';
+        dlt = '',
+        star ='';
     if(currentUser){
       if(setStories(currentUser.favorites).has(story.storyId)){
         color='text-warning';
       }
+      star = `fas fa-star ${color}`;
       if(setStories(currentUser.ownStories).has(story.storyId) || flag){
         edit = '<i class="fas fa-pencil-alt d-inline"></i>';
         dlt = '<i class="far fa-trash-alt d-inline pr-2"></i>';
@@ -320,7 +322,7 @@ $(async function() {
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
-        <i class="fas fa-star ${color}"></i>
+        <i class="${star}"></i>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
