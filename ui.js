@@ -37,11 +37,15 @@ $(async function() {
     const password = $("#login-password").val();
 
     // call the login static method to build a user instance
-    const userInstance = await User.login(username, password);
-    // set the global user to the user instance
-    currentUser = userInstance;
-    if(currentUser){
-      ifCurrentUser();
+    try{
+      const userInstance = await User.login(username, password);
+      // set the global user to the user instance
+      currentUser = userInstance;
+      if(currentUser){
+        ifCurrentUser();
+      }
+    } catch(e){
+      alert("Wrong Username or Password. Please try again...");
     }
     await generateStories();
     syncCurrentUserToLocalStorage();
