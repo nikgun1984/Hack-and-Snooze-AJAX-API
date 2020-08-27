@@ -71,11 +71,22 @@ class StoryList {
         }
       }
     );
+    return response.data;
+  }
 
-    const updatedStory = new Story(response.data.story);
-    return updatedStory;
+  static async deleteStory(user,id){
+    
+    // call the API
+    const response = await axios.delete(`${BASE_URL}/stories/${id}`, {
+      params: {
+          token: user.loginToken
+      }
+    });
+    return response.data;
   }
 }
+
+
 /**
  * The User class to primarily represent the current user.
  *  There are helper methods to signup (create), login, and getLoggedInUser
@@ -139,8 +150,8 @@ class User {
     const existingUser = new User(response.data.user);
 
     // instantiate Story instances for the user's favorites and ownStories
-    existingUser.favorites = new Set(response.data.user.favorites.map(s => new Story(s)));
-    existingUser.ownStories = new Set(response.data.user.stories.map(s => new Story(s).storyId));
+    existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
+    existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
 
     // attach the token to the newUser instance for convenience
     existingUser.loginToken = response.data.token;
@@ -172,9 +183,42 @@ class User {
     existingUser.loginToken = token;
 
     // instantiate Story instances for the user's favorites and ownStories
-    existingUser.favorites = new Set(response.data.user.favorites.map(s => new Story(s)));
-    existingUser.ownStories = new Set(response.data.user.stories.map(s => new Story(s)));
+    existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
+    existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
     return existingUser;
+  }
+
+  async updateUser(name, password){
+    
+    const response = await axios.patch(`${BASE_URL}/users/${this.username}`, {
+      token: this.loginToken,
+      user: {
+        name,
+        password
+      }
+      
+    });
+
+    return response.data;
+  }
+
+  async addFavoriteStory(id){
+    // call the API
+    const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${id}`, {
+      token: this.loginToken
+    });
+
+    return response.data;
+  }
+  async deleteFavoriteStory(id){
+    // call the API
+    const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${id}`, {
+      params: {
+        token: this.loginToken
+      }
+    });
+
+    return response.data;
   }
 }
 
@@ -198,6 +242,4 @@ class Story {
     this.createdAt = storyObj.createdAt;
     this.updatedAt = storyObj.updatedAt;
   }
-
-  
 }
