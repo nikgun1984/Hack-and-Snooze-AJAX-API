@@ -93,6 +93,7 @@ $(async function() {
       currentUser = newUser;
       syncCurrentUserToLocalStorage();
       loginAndSubmitForm();
+      ifCurrentUser();
     } catch(error){
       if(error.response){
         alert(error.response.data.error.message);
@@ -310,6 +311,7 @@ $(async function() {
         dlt = '',
         star ='';
     if(currentUser){
+      /// TODO ///
       if(setStories(currentUser.favorites).has(story.storyId)){
         color='text-warning';
       }
@@ -405,7 +407,7 @@ $(async function() {
   }
 
   /* simple function to pull the hostname from a URL */
-
+  /// TODO to utility.js
   function getHostName(url) {
     let hostName;
     if (url.indexOf("://") > -1) {
@@ -418,7 +420,7 @@ $(async function() {
     }
     return hostName;
   }
-
+   /// TODO to utility.js
   /* sync current user information to localStorage */
 
   function syncCurrentUserToLocalStorage() {
@@ -446,7 +448,7 @@ $(async function() {
   }
   
   /* build set out of array */
-
+  /// TODO create global var for this 
   function setStories(stories){
     const set = new Set(stories.map(s => s.storyId));
     return set;

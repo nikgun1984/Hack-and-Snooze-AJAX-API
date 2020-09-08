@@ -4,7 +4,7 @@ const BASE_URL = "https://hack-or-snooze-v3.herokuapp.com";
  * This class maintains the list of individual Story instances
  *  It also has some methods for fetching, adding, and removing stories
  */
-
+/// TODO BREAK INTO 3 CLASSES ///
 class StoryList {
   constructor(stories) {
     this.stories = stories;
@@ -145,7 +145,7 @@ class User {
         password
       }
     });
-
+    //// TODO CODE DUPLICATION ///
     // build a new User instance from the API response
     const existingUser = new User(response.data.user);
 
@@ -175,7 +175,7 @@ class User {
         token
       }
     });
-
+    ////  TODO /////
     // instantiate the user from the API information
     const existingUser = new User(response.data.user);
 
@@ -201,7 +201,7 @@ class User {
 
     return response.data;
   }
-
+  /// TODO ////
   async addFavoriteStory(id){
     // call the API
     const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${id}`, {
